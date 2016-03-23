@@ -1,0 +1,202 @@
+<html>
+<head>
+	<title>
+	Gauss Elimination Method
+	</title>
+	<style>
+	table {
+		border: 1px solid black;
+		padding: 2px;
+	}
+	th {
+		
+	}
+	td {
+		text-align: center;
+	}
+	th {
+		background-color: #CCCCCC;
+		width: 75px;
+	}
+	p {
+		margin: 16px 0px 0px 0px;
+	}
+	</style>
+</head>
+
+<body>
+	<div id="myDiv">
+		<p>
+			Gauss Elimination Method:
+		</p>
+		<!--//<input type="button" id="create" value="Click here" onclick="Javascript:AddTable(matrix.length)">--!>
+	</div>
+	
+	<script type="text/javascript">
+		var myDiv = document.getElementById("myDiv");
+		
+		var matrix = [[4,-4,0,2,1],
+									[0,3,0,6,0],
+									[0,2,1,0,0],
+									[1,5,0,5,1],
+									[1,0,2,0,3]];
+		
+		var usefulRows = matrix.length;
+		var columns = matrix.length
+		var currentCol = -1;
+		
+		//====== MAIN =================================
+		
+		AddTable(matrix.length);
+		
+		for (var col = 0; col < columns ; col ++) {
+			currentCol++;
+			for (var row = col + 1; row < usefulRows; row ++) {
+				DecideWhatToDo (row, col);
+			}
+			
+			Normalize (col);
+		}
+		
+		//====== DecideWhatToDo =======================
+		
+		function DecideWhatToDo (row, col) {
+			if (matrix[row][col] !== 0) {
+				addendRow = col;
+				PutZeroRowsAtTop (col);
+				IfDiagonalCellIsZero ();
+				
+				if (!isRowZero(col) && matrix[row][col] !== 0) {
+					Normalize (col);
+					AddRows (addendRow, row, matrix[row][col] / matrix[addendRow][col]);
+				}
+			}
+		}
+		
+		//====== IfDiagonalCellIsZero =================
+		
+		function IfDiagonalCellIsZero () {
+			if (matrix[col][col] == 0) {
+				SwitchRows (row, col);
+			}
+		}
+		
+		//====== PutZeroRowsAtTop =====================
+		
+		function PutZeroRowsAtTop (row) {
+			while (isRowZero(col) && usefulRows > 0) { //put all-zero rows on the top
+				usefulRows --;
+				SwitchRows (col, usefulRows);
+			}
+		}
+		
+		//====== AddTable =============================
+		
+		function AddTable(columns, currentRow1, currentRow2, currentCol) {
+			var table = document.createElement('TABLE');
+			var tableBody = document.createElement('TBODY');
+			table.appendChild(tableBody);
+			
+			// columns
+			var tr = document.createElement('TR');
+			tableBody.appendChild(tr);
+			
+			for (var i = 0; i < columns; i ++) {
+				var th = document.createElement('TH')
+				th.appendChild(document.createTextNode(i));
+				if (i == currentCol) {
+					th.style.color = "FF0000";
+				}
+				tr.appendChild(th);
+			}
+			
+			// rows
+			for (var mkRow = 0; mkRow < columns; mkRow ++) {
+				var tr = document.createElement('TR');
+				for (var mkCol = 0; mkCol < matrix[mkRow].length; mkCol ++) {
+					var td = document.createElement('TD')
+					if (mkCol == mkRow) {
+						td.style.background = "#E1E1E1";
+					}
+					td.appendChild(document.createTextNode(matrix[mkRow][mkCol]));
+					tr.appendChild(td)
+					
+					if (currentCol == mkCol && (currentRow1 == mkRow || currentRow2 == mkRow)) {
+						td.style.color = "FF0000";
+						td.style.fontWeight = "bold";
+					}
+				}
+				
+				if (currentRow1 == mkRow || currentRow2 == mkRow) {
+					tr.style.background = "#FFFFC2";
+				}
+				
+				tableBody.appendChild(tr);
+			}
+			
+			myDiv.appendChild(table);
+		}
+		
+		//====== isRowZero ============================
+		
+		function isRowZero (row) {
+			var rowIsZero = true;
+			for (var col = 0; col < columns; col ++) {
+				if (matrix[row][col] !== 0) {
+					rowIsZero = false;
+				}
+			}
+			return rowIsZero;
+		}
+		
+		//====== Explain ==============================
+		
+		function Explain (Explain) {
+			var para = document.createElement("p");
+			myDiv.appendChild(para);
+			var text = document.createTextNode(Explain);
+			para.appendChild(text);
+		}
+		
+		//====== AddRows ==============================
+		
+		function AddRows (addend, target, multiplier) {
+			for (var col = 0; col < columns; col ++) {
+				matrix[target][col] -= multiplier * matrix[addend][col];
+			}
+			
+			Explain ("(row " + target + ") += (row " + addend + ") * (" + -multiplier + "):");
+			AddTable(matrix.length, addend, target, currentCol);
+		}
+		
+		//====== Normalize ============================
+		
+		function Normalize (row) {
+			var multiplier = matrix[row][row];
+			if (multiplier != 0 && multiplier != 1) {
+				for (var col = 0; col < columns; col ++) {
+					matrix[row][col] /= multiplier;
+				}
+				
+				Explain("Normalizing row " + row + ":");
+				AddTable(matrix.length, row, -1, currentCol);
+			}
+		}
+		
+		//====== SwitchRows ===========================
+		
+		function SwitchRows (row1, row2) {
+			var temp = 0;
+			for (var col = 0; col < columns; col ++) {
+				temp = matrix[row1][col];
+				matrix[row1][col] = matrix[row2][col];
+				matrix[row2][col] = temp;
+			}
+			
+			Explain("Switching row " + row1 + " with row " + row2 + ":");
+			AddTable(matrix.length, row1, row2, currentCol);
+		}
+		
+	</script>
+</body>
+</html>
