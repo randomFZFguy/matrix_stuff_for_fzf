@@ -1,0 +1,5 @@
+with(plots); p1 := plot3d(-x^2-y^2+2, x = -3 .. 3, y = -3 .. 3, grid = [50, 50], scaling = constrained); p2 := plot3d(0, x = -3 .. 3, y = -3 .. 3, grid = [50, 50], scaling = constrained); display([p1, p2])
+with(plots); p1 := plot3d(x^2+y^2, x = -3 .. 3, y = -3 .. 3, grid = [50, 50], scaling = constrained); p2 := plot3d(0, x = -3 .. 3, y = -3 .. 3, grid = [50, 50], scaling = constrained); display([p1, p2])
+with(plots); p1 := plot3d(x^2-y^2, x = -3 .. 3, y = -3 .. 3, grid = [50, 50], scaling = constrained); p2 := plot3d(0, x = -3 .. 3, y = -3 .. 3, grid = [50, 50], scaling = constrained); display([p1, p2])
+with(plots); p1 := plot3d(x^2+3*y^2, x = -3 .. 3, y = -3 .. 3, grid = [50, 50], scaling = constrained); p2 := plot3d(0, x = -3 .. 3, y = -3 .. 3, grid = [50, 50], scaling = constrained); display([p1, p2])
+with(plots); p1 := plot3d(cos(y), x = -3 .. 3, y = -3 .. 3, grid = [50, 50], scaling = constrained); p2 := plot3d(0, x = -3 .. 3, y = -3 .. 3, grid = [50, 50], scaling = constrained); display([p1, p2])
