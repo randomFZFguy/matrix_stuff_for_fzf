@@ -43,9 +43,6 @@
 	</div>
 	
 	<script type="text/javascript">
-		function clearBox(elementID) {
-			document.getElementById(elementID).innerHTML = "";
-		}
 		
 		var myDiv = document.getElementById("myDiv");
 		
@@ -66,7 +63,7 @@
 		
 		//====== GetMatrixSize ========================
 		function GetMatrixSize(form) {
-			clearBox("myDiv");
+			ClearBox("myDiv");
 			var size = form.inputbox.value;
 			HandleInputSize(size)
 		}
@@ -136,6 +133,7 @@
 						}
 					}
 				}
+				Explain("This is the matrix you entered:");
 				SetMatrix(size);
 			}
 		}
@@ -301,6 +299,11 @@
 			myDiv.appendChild(para);
 			var text = document.createTextNode(explanation);
 			para.appendChild(text);
+		}
+		
+		//====== ClearBox =============================
+		function ClearBox(elementID) {
+			document.getElementById(elementID).innerHTML = "";
 		}
 </script>
 </body>
