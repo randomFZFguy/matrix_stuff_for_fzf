@@ -18,6 +18,9 @@
 			background-color: #CCCCCC;
 			width: 75px;
 		}
+		.matrixInput {
+			width: 75px;
+		}
 		p {
 			margin: 16px 0px 0px 0px;
 		}
@@ -25,14 +28,34 @@
 </head>
 
 <body>
+	<div id="input">
+		<form name = "matrix size" action = "" method = "get">
+		Matrix size:
+		<br />
+		<input type = "text" name = "inputbox" value = "">
+		<br />
+		<input type = "button" name = "button" value = "Click" onClick= "GetMatrixSize (this.form)">
+		</form>
+	</div>
 	<div id="myDiv">
 		<p>
-			Gauss Elimination Method:
+			
 		</p>
 		<!--//<input type="button" id="create" value="Click here" onclick="Javascript:AddTable (matrix.length)">--!>
 	</div>
 	
 	<script type="text/javascript">
+	
+		//====== GetMatrixSize ========================
+		function GetMatrixSize (form) {
+			var MatrixSize = form.inputbox.value;
+			Explain ("Matrix size: " + MatrixSize);
+			AddInputTable (MatrixSize);
+			Explain ("Gauss Elimination Method:")
+			AddTable (matrix.length);
+			TraverseMatrix ();
+		}
+	
 		var myDiv = document.getElementById ("myDiv");
 		
 		var matrix = [[2,4,-4,0,2,1],
@@ -48,28 +71,26 @@
 		
 		//====== MAIN =================================
 		
-		AddTable (matrix.length);
-		
 		//====== TraverseMatrix =======================
-		
-		for (var col = 0; col < columns ; col ++) {
-			currentCol ++;
-			for (var row = col + 1; row < usefulRows; row ++) {
-				DecideWhatToDo (row, col);
+		function TraverseMatrix () {
+			for (var col = 0; col < columns ; col ++) {
+				currentCol ++;
+				for (var row = col + 1; row < usefulRows; row ++) {
+					DecideWhatToDo (row, col);
+				}
+				
+				Normalize (col);
 			}
-			
-			Normalize (col);
 		}
 		
 		//====== DecideWhatToDo =======================
-		
 		function DecideWhatToDo (row, col) {
 			if (matrix[row][col] !== 0) {
 				addendRow = col;
-				PutZeroRowsAtTop (col);
-				IfDiagonalCellIsZero ();
+				PutZeroRowsAtTop (col, col);
+				IfDiagonalCellIsZero (row, col);
 				
-				if (!isRowZero (col) && matrix[row][col] !== 0) {
+				if (!IsRowZero (col) && matrix[row][col] !== 0) {
 					Normalize (col);
 					AddRows (addendRow, row, matrix[row][col] / matrix[addendRow][col]);
 				}
@@ -77,25 +98,22 @@
 		}
 		
 		//====== IfDiagonalCellIsZero =================
-		
-		function IfDiagonalCellIsZero () {
+		function IfDiagonalCellIsZero (row, col) {
 			if (matrix[col][col] == 0) {
 				SwitchRows (row, col);
 			}
 		}
 		
 		//====== PutZeroRowsAtTop =====================
-		
-		function PutZeroRowsAtTop (row) {
-			while (isRowZero (col) && usefulRows > 0) { //put all-zero rows on the top
+		function PutZeroRowsAtTop (row, col) {
+			while (IsRowZero (col) && usefulRows > 0) { //put all-zero rows on the top
 				usefulRows --;
 				SwitchRows (col, usefulRows);
 			}
 		}
 		
-		//====== isRowZero ============================
-		
-		function isRowZero (row) {
+		//====== IsRowZero ============================
+		function IsRowZero (row) {
 			var rowIsZero = true;
 			for (var col = 0; col < columns; col ++) {
 				if (matrix[row][col] !== 0) {
@@ -106,7 +124,6 @@
 		}
 		
 		//====== AddRows ==============================
-		
 		function AddRows (addend, target, multiplier) {
 			for (var col = 0; col < columns; col ++) {
 				matrix[target][col] -= multiplier * matrix[addend][col];
@@ -117,7 +134,6 @@
 		}
 		
 		//====== Normalize ============================
-		
 		function Normalize (row) {
 			var multiplier = matrix[row][row];
 			if (multiplier != 0 && multiplier != 1) {
@@ -131,7 +147,6 @@
 		}
 		
 		//====== SwitchRows ===========================
-		
 		function SwitchRows (row1, row2) {
 			var temp = 0;
 			for (var col = 0; col < columns; col ++) {
@@ -145,7 +160,6 @@
 		}
 		
 		//====== Explain ==============================
-		
 		function Explain (Explain) {
 			var para = document.createElement ("p");
 			myDiv.appendChild (para);
@@ -154,18 +168,16 @@
 		}
 		
 		//====== AddTable =============================
-		
 		function AddTable (columns, currentRow1, currentRow2, currentCol) {
-			var table = document.createElement ('TABLE');
-			var tableBody = document.createElement ('TBODY');
+			var table = document.createElement ('table');
+			var tableBody = document.createElement ('tbody');
 			table.appendChild (tableBody);
 			
 			// columns
-			var tr = document.createElement ('TR');
+			var tr = document.createElement ('tr');
 			tableBody.appendChild (tr);
-			
 			for (var i = 0; i < columns; i ++) {
-				var th = document.createElement ('TH');
+				var th = document.createElement ('th');
 				th.appendChild (document.createTextNode (i));
 				if (i == currentCol) {
 					th.style.color = "FF0000";
@@ -175,9 +187,9 @@
 			
 			// rows
 			for (var mkRow = 0; mkRow < columns; mkRow ++) {
-				var tr = document.createElement ('TR');
+				var tr = document.createElement ('tr');
 				for (var mkCol = 0; mkCol < matrix[mkRow].length; mkCol ++) {
-					var td = document.createElement ('TD');
+					var td = document.createElement ('td');
 					if (mkCol == mkRow) {
 						td.style.background = "#E1E1E1";
 					}
@@ -200,6 +212,37 @@
 			myDiv.appendChild (table);
 		}
 		
+		//====== AddInputTable ========================
+		function AddInputTable (size) {
+			var table = document.createElement ('table');
+			var tableBody = document.createElement ('tbody');
+			table.appendChild (tableBody);
+			
+			// columns
+			var tr = document.createElement ('tr');
+			tableBody.appendChild (tr);
+			for (var i = 0; i < size; i ++) {
+				var th = document.createElement ('th');
+				th.appendChild (document.createTextNode (i));
+				tr.appendChild (th);
+			}
+			
+			// rows
+			for (var mkRow = 0; mkRow < size; mkRow ++) {
+				var tr = document.createElement ('tr');
+				for (var mkCol = 0; mkCol < size; mkCol ++) {
+					var td = document.createElement ('td');
+					var input1 = document.createElement("input");
+					input1.type = "number";
+					input1.className = "matrixInput";
+					td.appendChild (input1);
+					
+					tr.appendChild (td);
+				}
+				tableBody.appendChild (tr);
+			}
+			myDiv.appendChild (table);
+		}
 	</script>
 </body>
 </html>
