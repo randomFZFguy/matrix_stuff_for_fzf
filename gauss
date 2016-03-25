@@ -48,12 +48,8 @@
 	
 		//====== GetMatrixSize ========================
 		function GetMatrixSize (form) {
-			var MatrixSize = form.inputbox.value;
-			Explain ("Matrix size: " + MatrixSize);
-			AddInputTable (MatrixSize);
-			Explain ("Gauss Elimination Method:")
-			AddTable (matrix.length);
-			TraverseMatrix ();
+			var matrixSize = form.inputbox.value;
+			main (matrixSize)
 		}
 	
 		var myDiv = document.getElementById ("myDiv");
@@ -69,7 +65,32 @@
 		var columns = matrix.length
 		var currentCol = -1;
 		
+		function SetMatrix (matrixSize, inputMatrix) {
+			matrix = JSON.parse (inputMatrix);
+			for (var row = 0; row < matrixSize; row ++) {
+				for (var col = 0; col < matrixSize; col ++) {
+				}
+			}
+			usefulRows = matrixSize;
+			columns = matrixSize;
+			AddTable (matrixSize);
+			TraverseMatrix ();
+		}
+		
+		
 		//====== MAIN =================================
+		function main (matrixSize) {
+			if (matrixSize > 0 && matrixSize < 20) {
+				Explain ("Matrix size: " + matrixSize);
+				Explain ("Fill in the matrix. You can leave 0 cells empty.")
+				AddInputTable (matrixSize);
+			} else {
+				Explain ("You entered an invalid matrix size. We'll use the example matrix.");
+				Explain ("Gauss Elimination Method:")
+				AddTable (matrix.length);
+				TraverseMatrix ();
+			}
+		}
 		
 		//====== TraverseMatrix =======================
 		function TraverseMatrix () {
@@ -188,11 +209,12 @@
 			// rows
 			for (var mkRow = 0; mkRow < columns; mkRow ++) {
 				var tr = document.createElement ('tr');
-				for (var mkCol = 0; mkCol < matrix[mkRow].length; mkCol ++) {
+				for (var mkCol = 0; mkCol < columns; mkCol ++) {
 					var td = document.createElement ('td');
 					if (mkCol == mkRow) {
 						td.style.background = "#E1E1E1";
 					}
+					console.log (matrix[mkRow][mkCol]);
 					td.appendChild (document.createTextNode (matrix[mkRow][mkCol]));
 					tr.appendChild (td)
 					
@@ -213,35 +235,61 @@
 		}
 		
 		//====== AddInputTable ========================
+		var inputMatrix = [];
+		var inputCell = [];
 		function AddInputTable (size) {
-			var table = document.createElement ('table');
-			var tableBody = document.createElement ('tbody');
+			var table = document.createElement ("table");
+			var tableBody = document.createElement ("tbody");
 			table.appendChild (tableBody);
 			
+			
 			// columns
-			var tr = document.createElement ('tr');
+			var tr = document.createElement ("tr");
 			tableBody.appendChild (tr);
 			for (var i = 0; i < size; i ++) {
-				var th = document.createElement ('th');
+				var th = document.createElement ("th");
 				th.appendChild (document.createTextNode (i));
 				tr.appendChild (th);
 			}
 			
 			// rows
 			for (var mkRow = 0; mkRow < size; mkRow ++) {
-				var tr = document.createElement ('tr');
+				var tr = document.createElement ("tr");
+				inputMatrix[mkRow] = [];
+				inputCell[mkRow] = [];
 				for (var mkCol = 0; mkCol < size; mkCol ++) {
-					var td = document.createElement ('td');
-					var input1 = document.createElement("input");
-					input1.type = "number";
-					input1.className = "matrixInput";
-					td.appendChild (input1);
-					
+					inputMatrix[mkRow][mkCol] = 0;
+					var td = document.createElement ("td");
+					inputCell[mkRow][mkCol] = document.createElement("input");
+					inputCell[mkRow][mkCol].type = "number";
+					inputCell[mkRow][mkCol].className = "matrixInput";
+					td.appendChild (inputCell[mkRow][mkCol]);
 					tr.appendChild (td);
 				}
 				tableBody.appendChild (tr);
 			}
 			myDiv.appendChild (table);
+			
+			function FillInputMatrixWithInputCells () {
+				for (var mkRow = 0; mkRow < size; mkRow ++) {
+					for (var mkCol = 0; mkCol < size; mkCol ++) {
+						if (inputCell[mkRow][mkCol].value != "") {
+							inputMatrix[mkRow][mkCol] = inputCell[mkRow][mkCol].value;
+						}
+					}
+				}
+			}
+			
+			var submitButton = document.createElement ("button");
+			var buttonText = document.createTextNode ("Submit");
+			submitButton.appendChild (buttonText);
+			myDiv.appendChild (submitButton);
+			submitButton.addEventListener ("click", GiveInputMatrixToSetMatrix);
+			function GiveInputMatrixToSetMatrix () {
+				FillInputMatrixWithInputCells ();
+				SetMatrix (size, JSON.stringify (inputMatrix));
+			}
+			
 		}
 	</script>
 </body>
