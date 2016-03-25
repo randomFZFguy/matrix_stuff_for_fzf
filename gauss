@@ -29,268 +29,279 @@
 
 <body>
 	<div id="input">
-		<form name = "matrix size" action = "" method = "get">
-		Matrix size:
-		<br />
-		<input type = "text" name = "inputbox" value = "">
-		<br />
-		<input type = "button" name = "button" value = "Click" onClick= "GetMatrixSize (this.form)">
+		<form>
+			Enter matrix size (from 1 to 15).
+			<br />
+			Otherwise the default matrix will be used.
+			<br />
+			<input type = "number" name = "inputbox">
+			<br />
+			<input type = "button" name = "button" value = "Submit" onClick= "GetMatrixSize(this.form)">
 		</form>
 	</div>
 	<div id="myDiv">
-		<p>
-			
-		</p>
-		<!--//<input type="button" id="create" value="Click here" onclick="Javascript:AddTable (matrix.length)">--!>
 	</div>
 	
 	<script type="text/javascript">
-	
-		//====== GetMatrixSize ========================
-		function GetMatrixSize (form) {
-			var matrixSize = form.inputbox.value;
-			main (matrixSize)
+		function clearBox(elementID) {
+			document.getElementById(elementID).innerHTML = "";
 		}
-	
-		var myDiv = document.getElementById ("myDiv");
 		
-		var matrix = [[2,4,-4,0,2,1],
+		var myDiv = document.getElementById("myDiv");
+		
+		var m = {
+			reset: function rand() {
+				m.elems = [];
+				m.size = 0;
+				m.usefulRows = 0;
+				m.col = -1;
+				m.row = 0;
+			},
+			elems: [],
+			size: 0,
+			usefulRows: 0,
+			col: -1,
+			row: 0
+		};
+		
+		//====== GetMatrixSize ========================
+		function GetMatrixSize(form) {
+			clearBox("myDiv");
+			var size = form.inputbox.value;
+			HandleInputSize(size)
+		}
+		
+		//====== HandleInputSize ======================
+		function HandleInputSize(size) {
+			if (size > 0 && size < 16) {
+				Explain("Matrix size: " + size);
+				Explain("Fill in the matrix. You can leave 0 cells empty.")
+				m.reset();
+				AddInputTableAndHandleInputData(size);
+			} else {
+				Explain("You entered an invalid matrix size. We'll use the example matrix.")
+				m.reset();
+				SetMatrix();
+			}
+		}
+		
+		//====== AddInputTableAndHandleInputData ======
+		function AddInputTableAndHandleInputData(size) {
+			var inputTable = document.createElement("table");
+			var tableBody = document.createElement("tbody");
+			inputTable.appendChild(tableBody);
+			
+			// columns
+			var tr = document.createElement("tr");
+			tableBody.appendChild(tr);
+			for (var col = 0; col < size; col ++) {
+				var th = document.createElement("th");
+				th.appendChild(document.createTextNode(col));
+				tr.appendChild(th);
+			}
+			
+			// rows
+			var inputCell = [];
+			for (var row = 0; row < size; row ++) {
+				var tr = document.createElement("tr");
+				inputCell[row] = [];
+				for (var col = 0; col < size; col ++) {
+					inputCell[row][col] = document.createElement("input");
+					inputCell[row][col].type = "number";
+					inputCell[row][col].className = "matrixInput";
+					var td = document.createElement("td");
+					td.appendChild(inputCell[row][col]);
+					tr.appendChild(td);
+				}
+				tableBody.appendChild(tr);
+			}
+			
+			myDiv.appendChild(inputTable);
+			
+			// submit button
+			var submitButton = document.createElement("button");
+			var buttonText = document.createTextNode("Submit");
+			submitButton.appendChild(buttonText);
+			myDiv.appendChild(submitButton);
+			submitButton.addEventListener("click", PopulateMatrix);
+			
+			function PopulateMatrix() {
+				for (var row = 0; row < size; row ++) {
+					m.elems[row] = [];
+					for (var col = 0; col < size; col ++) {
+						if (inputCell[row][col].value != "") {
+							m.elems[row][col] = inputCell[row][col].value;
+						} else {
+							m.elems[row][col] = 0;
+						}
+					}
+				}
+				SetMatrix(size);
+			}
+		}
+
+		//====== SetMatrix ============================
+		function SetMatrix(size) {
+			if (size) {
+				m.usefulRows = size;
+				m.size = size;
+				AddTable();
+				GaussMethod();
+			} else {
+				m.elems = [[2,4,-4,0,2,1],
 									[0,4,-3,0,6,0],
 									[0,2,5,13,-3.5,0],
 									[0,-2,-1,4,-0.5,-9],
 									[1,5,0,1,-5,1],
 									[1,0,2,0,-2,-2]];
+				m.size = m.elems.length;
+				m.usefulRows = m.elems.length;
+				AddTable();
+				GaussMethod();
+			}
+		}
 		
-		var usefulRows = matrix.length;
-		var columns = matrix.length
-		var currentCol = -1;
-		
-		function SetMatrix (matrixSize, inputMatrix) {
-			matrix = JSON.parse (inputMatrix);
-			for (var row = 0; row < matrixSize; row ++) {
-				for (var col = 0; col < matrixSize; col ++) {
+		//====== AddTable =============================
+		function AddTable(currentRow1, currentRow2) {
+			var table = document.createElement("table");
+			var tableBody = document.createElement("tbody");
+			table.appendChild(tableBody);
+			
+			// columns
+			var tr = document.createElement("tr");
+			tableBody.appendChild(tr);
+			for (var col = 0; col < m.size; col ++) {
+				var th = document.createElement("th");
+				th.appendChild(document.createTextNode(col));
+				if (col == m.col) {
+					th.style.color = "FF0000";
 				}
+				tr.appendChild(th);
 			}
-			usefulRows = matrixSize;
-			columns = matrixSize;
-			AddTable (matrixSize);
-			TraverseMatrix ();
-		}
-		
-		
-		//====== MAIN =================================
-		function main (matrixSize) {
-			if (matrixSize > 0 && matrixSize < 20) {
-				Explain ("Matrix size: " + matrixSize);
-				Explain ("Fill in the matrix. You can leave 0 cells empty.")
-				AddInputTable (matrixSize);
-			} else {
-				Explain ("You entered an invalid matrix size. We'll use the example matrix.");
-				Explain ("Gauss Elimination Method:")
-				AddTable (matrix.length);
-				TraverseMatrix ();
-			}
-		}
-		
-		//====== TraverseMatrix =======================
-		function TraverseMatrix () {
-			for (var col = 0; col < columns ; col ++) {
-				currentCol ++;
-				for (var row = col + 1; row < usefulRows; row ++) {
-					DecideWhatToDo (row, col);
+			
+			// rows
+			for (var row = 0; row < m.size; row ++) {
+				var tr = document.createElement("tr");
+				for (var col = 0; col < m.size; col ++) {
+					var td = document.createElement("td");
+					if (col == row) {
+						td.style.background = "#E1E1E1";
+					}
+					td.appendChild(document.createTextNode(m.elems[row][col]));
+					tr.appendChild(td)
+					
+					if (m.col == col && (currentRow1 == row || currentRow2 == row)) {
+						td.style.color = "FF0000";
+						td.style.fontWeight = "bold";
+					}
 				}
 				
-				Normalize (col);
+				if (currentRow1 == row || currentRow2 == row) {
+					tr.style.background = "#FFFFC2";
+				}
+				
+				tableBody.appendChild(tr);
+			}
+			
+			myDiv.appendChild(table);
+		}
+
+		//====== GaussMethod ==========================
+		function GaussMethod() {
+			Explain("Gauss Elimination Method:");
+			for (var col = 0; col < m.size ; col ++) {
+				m.col ++;
+				m.row = m.col;
+				for (var row = col + 1; row < m.usefulRows; row ++) {
+					m.row ++;
+					HandleMatrixCell();
+				}
+				Normalize ();
 			}
 		}
 		
-		//====== DecideWhatToDo =======================
-		function DecideWhatToDo (row, col) {
-			if (matrix[row][col] !== 0) {
-				addendRow = col;
-				PutZeroRowsAtTop (col, col);
-				IfDiagonalCellIsZero (row, col);
-				
-				if (!IsRowZero (col) && matrix[row][col] !== 0) {
-					Normalize (col);
-					AddRows (addendRow, row, matrix[row][col] / matrix[addendRow][col]);
+		//====== HandleMatrixCell =====================
+		function HandleMatrixCell() {
+			if (m.elems[m.row][m.col] !== 0) {
+				addendRow = m.col;
+				PutZeroRowsAtTop();
+				IfDiagonalCellIsZero();
+				if (!IsRowZero() && m.elems[m.row][m.col] !== 0) {
+					Normalize();
+					AddRows (addendRow, m.row, m.elems[m.row][m.col] / m.elems[addendRow][m.col]);
 				}
+			}
+		}
+			
+		//====== PutZeroRowsAtTop =====================
+		function PutZeroRowsAtTop() {
+			while (IsRowZero() && m.usefulRows > 0) {
+				m.usefulRows --;
+				SwitchRows (m.col, m.usefulRows);
 			}
 		}
 		
 		//====== IfDiagonalCellIsZero =================
-		function IfDiagonalCellIsZero (row, col) {
-			if (matrix[col][col] == 0) {
-				SwitchRows (row, col);
+		function IfDiagonalCellIsZero() {
+			if (m.elems[m.col][m.col] == 0) {
+				SwitchRows(m.row, m.col);
 			}
 		}
-		
-		//====== PutZeroRowsAtTop =====================
-		function PutZeroRowsAtTop (row, col) {
-			while (IsRowZero (col) && usefulRows > 0) { //put all-zero rows on the top
-				usefulRows --;
-				SwitchRows (col, usefulRows);
-			}
-		}
-		
+	
 		//====== IsRowZero ============================
-		function IsRowZero (row) {
+		function IsRowZero() {
 			var rowIsZero = true;
-			for (var col = 0; col < columns; col ++) {
-				if (matrix[row][col] !== 0) {
+			for (var col = 0; col < m.size; col ++) {
+				if (m.elems[m.col][col] !== 0) {
 					rowIsZero = false;
 				}
 			}
 			return rowIsZero;
 		}
 		
-		//====== AddRows ==============================
-		function AddRows (addend, target, multiplier) {
-			for (var col = 0; col < columns; col ++) {
-				matrix[target][col] -= multiplier * matrix[addend][col];
-			}
-			
-			Explain ("(row " + target + ") += (row " + addend + ") * (" + -multiplier + "):");
-			AddTable (matrix.length, addend, target, currentCol);
-		}
-		
 		//====== Normalize ============================
-		function Normalize (row) {
-			var multiplier = matrix[row][row];
+		function Normalize() {
+			var multiplier = m.elems[m.col][m.col];
 			if (multiplier != 0 && multiplier != 1) {
-				for (var col = 0; col < columns; col ++) {
-					matrix[row][col] /= multiplier;
+				for (var col = 0; col < m.size; col ++) {
+					m.elems[m.col][col] /= multiplier;
 				}
 				
-				Explain ("Normalizing row " + row + ":");
-				AddTable (matrix.length, row, -1, currentCol);
+				Explain("Normalizing row " + m.col + ":");
+				AddTable(m.col);
 			}
+		}
+		
+		//====== AddRows ==============================
+		function AddRows(addend, target, multiplier) {
+			for (var col = 0; col < m.size; col ++) {
+				m.elems[target][col] -= multiplier * m.elems[addend][col];
+			}
+			
+			Explain("(row " + target + ") += (row " + addend + ") * (" + -multiplier + "):");
+			AddTable(addend, target);
 		}
 		
 		//====== SwitchRows ===========================
-		function SwitchRows (row1, row2) {
+		function SwitchRows(row1, row2) {
 			var temp = 0;
-			for (var col = 0; col < columns; col ++) {
-				temp = matrix[row1][col];
-				matrix[row1][col] = matrix[row2][col];
-				matrix[row2][col] = temp;
+			for (var col = 0; col < m.size; col ++) {
+				temp = m.elems[row1][col];
+				m.elems[row1][col] = m.elems[row2][col];
+				m.elems[row2][col] = temp;
 			}
 			
-			Explain ("Switching row " + row1 + " with row " + row2 + ":");
-			AddTable (matrix.length, row1, row2, currentCol);
+			Explain("Switching row " + row1 + " with row " + row2 + ":");
+			AddTable(row1, row2);
 		}
 		
 		//====== Explain ==============================
-		function Explain (Explain) {
-			var para = document.createElement ("p");
-			myDiv.appendChild (para);
-			var text = document.createTextNode (Explain);
-			para.appendChild (text);
+		function Explain(explanation) {
+			var para = document.createElement("p");
+			myDiv.appendChild(para);
+			var text = document.createTextNode(explanation);
+			para.appendChild(text);
 		}
-		
-		//====== AddTable =============================
-		function AddTable (columns, currentRow1, currentRow2, currentCol) {
-			var table = document.createElement ('table');
-			var tableBody = document.createElement ('tbody');
-			table.appendChild (tableBody);
-			
-			// columns
-			var tr = document.createElement ('tr');
-			tableBody.appendChild (tr);
-			for (var i = 0; i < columns; i ++) {
-				var th = document.createElement ('th');
-				th.appendChild (document.createTextNode (i));
-				if (i == currentCol) {
-					th.style.color = "FF0000";
-				}
-				tr.appendChild (th);
-			}
-			
-			// rows
-			for (var mkRow = 0; mkRow < columns; mkRow ++) {
-				var tr = document.createElement ('tr');
-				for (var mkCol = 0; mkCol < columns; mkCol ++) {
-					var td = document.createElement ('td');
-					if (mkCol == mkRow) {
-						td.style.background = "#E1E1E1";
-					}
-					console.log (matrix[mkRow][mkCol]);
-					td.appendChild (document.createTextNode (matrix[mkRow][mkCol]));
-					tr.appendChild (td)
-					
-					if (currentCol == mkCol && (currentRow1 == mkRow || currentRow2 == mkRow)) {
-						td.style.color = "FF0000";
-						td.style.fontWeight = "bold";
-					}
-				}
-				
-				if (currentRow1 == mkRow || currentRow2 == mkRow) {
-					tr.style.background = "#FFFFC2";
-				}
-				
-				tableBody.appendChild (tr);
-			}
-			
-			myDiv.appendChild (table);
-		}
-		
-		//====== AddInputTable ========================
-		var inputMatrix = [];
-		var inputCell = [];
-		function AddInputTable (size) {
-			var table = document.createElement ("table");
-			var tableBody = document.createElement ("tbody");
-			table.appendChild (tableBody);
-			
-			
-			// columns
-			var tr = document.createElement ("tr");
-			tableBody.appendChild (tr);
-			for (var i = 0; i < size; i ++) {
-				var th = document.createElement ("th");
-				th.appendChild (document.createTextNode (i));
-				tr.appendChild (th);
-			}
-			
-			// rows
-			for (var mkRow = 0; mkRow < size; mkRow ++) {
-				var tr = document.createElement ("tr");
-				inputMatrix[mkRow] = [];
-				inputCell[mkRow] = [];
-				for (var mkCol = 0; mkCol < size; mkCol ++) {
-					inputMatrix[mkRow][mkCol] = 0;
-					var td = document.createElement ("td");
-					inputCell[mkRow][mkCol] = document.createElement("input");
-					inputCell[mkRow][mkCol].type = "number";
-					inputCell[mkRow][mkCol].className = "matrixInput";
-					td.appendChild (inputCell[mkRow][mkCol]);
-					tr.appendChild (td);
-				}
-				tableBody.appendChild (tr);
-			}
-			myDiv.appendChild (table);
-			
-			function FillInputMatrixWithInputCells () {
-				for (var mkRow = 0; mkRow < size; mkRow ++) {
-					for (var mkCol = 0; mkCol < size; mkCol ++) {
-						if (inputCell[mkRow][mkCol].value != "") {
-							inputMatrix[mkRow][mkCol] = inputCell[mkRow][mkCol].value;
-						}
-					}
-				}
-			}
-			
-			var submitButton = document.createElement ("button");
-			var buttonText = document.createTextNode ("Submit");
-			submitButton.appendChild (buttonText);
-			myDiv.appendChild (submitButton);
-			submitButton.addEventListener ("click", GiveInputMatrixToSetMatrix);
-			function GiveInputMatrixToSetMatrix () {
-				FillInputMatrixWithInputCells ();
-				SetMatrix (size, JSON.stringify (inputMatrix));
-			}
-			
-		}
-	</script>
+</script>
 </body>
 </html>
