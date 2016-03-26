@@ -32,7 +32,7 @@
 		<form>
 			Enter matrix size (from 1 to 15).
 			<br />
-			Otherwise the default matrix will be used.
+			Otherwise the example matrix will be used.
 			<br />
 			<input type = "number" name = "inputbox">
 			<br />
@@ -214,7 +214,7 @@
 					m.row ++;
 					HandleMatrixCell();
 				}
-				Normalize ();
+				Normalize();
 			}
 		}
 		
@@ -226,7 +226,7 @@
 				IfDiagonalCellIsZero();
 				if (!IsRowZero() && m.elems[m.row][m.col] !== 0) {
 					Normalize();
-					AddRows (addendRow, m.row, m.elems[m.row][m.col] / m.elems[addendRow][m.col]);
+					AddRows(addendRow, m.row, m.elems[m.row][m.col] / m.elems[addendRow][m.col]);
 				}
 			}
 		}
@@ -235,7 +235,7 @@
 		function PutZeroRowsAtTop() {
 			while (IsRowZero() && m.usefulRows > 0) {
 				m.usefulRows --;
-				SwitchRows (m.col, m.usefulRows);
+				SwitchRows(m.col, m.usefulRows);
 			}
 		}
 		
