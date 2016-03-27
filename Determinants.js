@@ -274,7 +274,7 @@
 		//====== LaplaceNethod ========================
 		function LaplaceMethod() {
 			Explain("Laplace Method:", "h4");
-			Explain("The determinant is " + FindDeterminant());
+			Explain("The determinant is " + FindDeterminant(), "h4");
 		}
 		
 		//====== FindDeterminant ======================
@@ -329,7 +329,7 @@
 					}
 				}
 			}
-			Explain("We removed row " + i + " and column " + j + ":");
+			Explain("The minor with row " + i + " and column " + j + " removed:");
 			AddTableLaplace(JSON.stringify(minor), size - 1);
 			return JSON.stringify(minor);
 		}
