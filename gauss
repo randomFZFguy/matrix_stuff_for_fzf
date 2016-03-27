@@ -36,7 +36,13 @@
 			<br />
 			<input type = "number" name = "inputbox">
 			<br />
+			<input type = "radio" name = "method" id = "methodGauss" value = "Gauss" checked>Gauss
+			<br />
+			<input type = "radio" name = "method" id = "methodLaplace" value = "Laplace">Laplace
+			<br />
 			<input type = "button" name = "button" value = "Submit" onClick= "GetMatrixSize(this.form)">
+		</form>
+		<form action="">
 		</form>
 	</div>
 	<div id="myDiv">
@@ -60,6 +66,17 @@
 			col: -1,
 			row: 0
 		};
+		
+		
+		
+		//====== ChooseAMethod ========================
+		function ChooseAMethod() {
+			if (document.getElementById('methodGauss').checked) {
+				GaussMethod();
+			} else if (document.getElementById('methodLaplace').checked) {
+				LaplaceMethod();
+			}
+		}
 		
 		//====== GetMatrixSize ========================
 		function GetMatrixSize(form) {
@@ -144,7 +161,7 @@
 				m.usefulRows = size;
 				m.size = size;
 				AddTable();
-				GaussMethod();
+				ChooseAMethod();
 			} else {
 				m.elems = [[2,4,-4,0,2,1],
 									[0,4,-3,0,6,0],
@@ -155,7 +172,7 @@
 				m.size = m.elems.length;
 				m.usefulRows = m.elems.length;
 				AddTable();
-				GaussMethod();
+				ChooseAMethod();
 			}
 		}
 		
@@ -214,8 +231,9 @@
 					m.row ++;
 					HandleMatrixCell();
 				}
-				Normalize();
+				//Normalize();
 			}
+			Explain("The determinant is " + MultiplyDiagonal() + ".");
 		}
 		
 		//====== HandleMatrixCell =====================
@@ -225,7 +243,7 @@
 				PutZeroRowsAtTop();
 				IfDiagonalCellIsZero();
 				if (!IsRowZero() && m.elems[m.row][m.col] !== 0) {
-					Normalize();
+					//Normalize();
 					AddRows(addendRow, m.row, m.elems[m.row][m.col] / m.elems[addendRow][m.col]);
 				}
 			}
@@ -252,6 +270,7 @@
 			for (var col = 0; col < m.size; col ++) {
 				if (m.elems[m.col][col] !== 0) {
 					rowIsZero = false;
+					break;
 				}
 			}
 			return rowIsZero;
@@ -293,6 +312,16 @@
 			AddTable(row1, row2);
 		}
 		
+		//====== MultiplyDiagonal =====================
+		function MultiplyDiagonal() {
+			var product = 1;
+			for (var i = 0; i < m.size; i ++) {
+				product *= m.elems[i][i];
+			}
+			return product;
+		}
+		
+		
 		//====== Explain ==============================
 		function Explain(explanation) {
 			var para = document.createElement("p");
@@ -305,6 +334,114 @@
 		function ClearBox(elementID) {
 			document.getElementById(elementID).innerHTML = "";
 		}
-</script>
+		
+		
+		//====== LaplaceNethod ========================
+		function LaplaceMethod() {
+			Explain("Laplace Method:");
+			Explain("The determinant is " + FindDeterminant());
+			
+		}
+		
+		//====== FindDeterminant ======================
+		function FindDeterminant(matrix, size) {
+			if (!matrix) {
+				matrix = m.elems;
+				size = m.size;
+			} else {
+				matrix = JSON.parse(matrix);
+			}
+			
+			var determinant = 0;
+			
+			if (size > 3) {
+				for (var i = 0; i < size; i ++) {
+					// Math.pow(-1, i) = Math.pow(-1, (0 + 1) + (i + 1))
+					determinant += matrix[0][i] * Math.pow(-1, i) * FindDeterminant(GetMinor(JSON.stringify(matrix), size, 0, i), size - 1);
+				}
+			} else {
+				determinant += Find3x3Determinant(JSON.stringify(matrix));
+				Explain("The determinant of this 3x3 matrix is " + determinant);
+			}
+			
+			return determinant;
+		}
+		
+		//====== GetMinor =============================
+		function GetMinor(matrix, size, i, j) {
+			matrix = JSON.parse(matrix);
+			var minor = [];
+			for (var row = 0; row < size - 1; row ++) {
+				minor[row] = [];
+				for (var col = 0; col < size - 1; col ++) {
+					if (col >= j) {
+						if (row >= i) {
+							minor[row][col] = matrix[row + 1][col + 1];
+						} else {
+							minor[row][col] = matrix[row + 1][col + 1];
+						}
+					} else {
+						if (row >= i) {
+							minor[row][col] = matrix[row + 1][col];
+						} else {
+							minor[row][col] = matrix[row][col];
+						}
+					}
+				}
+			}
+			Explain("We removed row " + i + " and column " + j + ":");
+			AddTableLaplace(JSON.stringify(minor), size - 1);
+			return JSON.stringify(minor);
+		}
+		
+		//====== Find3x3Determinant ===================
+		function Find3x3Determinant(matrix) {
+			matrix = JSON.parse(matrix);
+			var determinant = matrix[0][0] * matrix[1][1] * matrix[2][2] +
+												matrix[0][1] * matrix[1][2] * matrix[2][0] +
+												matrix[0][2] * matrix[1][0] * matrix[2][1] -
+												matrix[0][0] * matrix[1][2] * matrix[2][1] -
+												matrix[0][1] * matrix[1][0] * matrix[2][2] -
+												matrix[0][2] * matrix[1][1] * matrix[2][0];
+			return determinant;
+		}
+		
+		//====== AddTableLaplace ======================
+		function AddTableLaplace(matrix, size) {
+			var table = document.createElement("table");
+			var tableBody = document.createElement("tbody");
+			table.appendChild(tableBody);
+			
+			matrix = JSON.parse(matrix);
+			
+			// columns
+			var tr = document.createElement("tr");
+			tableBody.appendChild(tr);
+			for (var col = 0; col < size; col ++) {
+				var th = document.createElement("th");
+				th.appendChild(document.createTextNode(col));
+				tr.appendChild(th);
+			}
+			
+			// rows
+			for (var row = 0; row < size; row ++) {
+				var tr = document.createElement("tr");
+				for (var col = 0; col < size; col ++) {
+					var td = document.createElement("td");
+					if (col == row) {
+						td.style.background = "#E1E1E1";
+					}
+					td.appendChild(document.createTextNode(matrix[row][col]));
+					tr.appendChild(td)
+				}
+				
+				tableBody.appendChild(tr);
+			}
+			
+			myDiv.appendChild(table);
+		}
+		
+		
+		</script>
 </body>
 </html>
