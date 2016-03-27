@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>
+	Gauss and Laplace methods
+	</title>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+	<style>
+		table {
+			border: 1px solid black;
+			padding: 2px;
+		}
+		td, th {
+			text-align: center;
+		}
+		th {
+			background-color: #CCCCCC;
+			width: 75px;
+		}
+		.matrixInput {
+			width: 75px;
+		}
+		p {
+			margin: 16px 0px 0px 0px;
+		}
+	</style>
+</head>
+
+<body>
+	<div id="input">
+		<form>
+			Enter matrix size (from 1 to 15).
+			<br />
+			Otherwise the example matrix will be used.
+			<br />
+			Use Laplace for big tables at your own risk.
+			<br />
+			<input type = "number" name = "inputbox">
+			<br />
+			<input type = "radio" name = "method" id = "methodGauss" value = "Gauss" checked>Gauss
+			<br />
+			<input type = "radio" name = "method" id = "methodLaplace" value = "Laplace">Laplace
+			<br />
+			<input type = "button" name = "button" value = "Submit" onClick= "GetMatrixSize(this.form)">
+		</form>
+		<form action="">
+		</form>
+	</div>
+	<div id="myDiv">
+	</div>
+	<script src="http://code.jquery.com/jquery-2.2.2.min.js"></script>
+	<script src="Determinants.js"></script>
+
+</body>
+</html>
