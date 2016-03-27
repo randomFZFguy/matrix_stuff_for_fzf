@@ -6,9 +6,10 @@
 	</title>
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
 	<style>
-		table {
+		.table {
 			border: 1px solid black;
 			padding: 2px;
+			width: auto;
 		}
 		td, th {
 			text-align: center;
@@ -28,28 +29,72 @@
 
 <body>
 	<div id="input">
+		<!--form>
+      <fieldset>
+        <legend>
+					Set the matrix size (from 1 to 15).
+				</legend>
+        <label>
+					Matrix size
+        </label>
+        
+        <input type="number" placeholder="Type something...">
+        <span class="help-block">
+					If you enter an invalid size, the example matrix will be used.
+					<br />
+					Use Laplace for big tables at your own risk.
+				</span>
+				
+        <label class="radio">
+					<input type="radio" name="method" id="methodGauss" value="Gauss" checked>Gauss
+        </label>
+        
+        <label class="radio">
+					<input type="radio" name="method" id="methodLaplace" value="Laplace">
+					Laplace
+        </label>
+      </fieldset>
+    </form-->
+    
 		<form>
-			Enter matrix size (from 1 to 15).
-			<br />
-			Otherwise the example matrix will be used.
-			<br />
-			Use Laplace for big tables at your own risk.
-			<br />
-			<input type = "number" name = "inputbox">
-			<br />
-			<input type = "radio" name = "method" id = "methodGauss" value = "Gauss" checked>Gauss
-			<br />
-			<input type = "radio" name = "method" id = "methodLaplace" value = "Laplace">Laplace
-			<br />
-			<input type = "button" name = "button" value = "Submit" onClick= "GetMatrixSize(this.form)">
-		</form>
-		<form action="">
+			<fieldset>
+				<legend>
+					Set matrix and method.
+				</legend>
+        <span class="help-block">
+					Use Laplace for big tables at your own risk.
+				</span>
+				<select name = "inputbox">
+					<option>Use example matrix</option>
+					<option>1</option>
+					<option>2</option>
+					<option>3</option>
+					<option>4</option>
+					<option selected>5</option>
+					<option>6</option>
+					<option>7</option>
+					<option>8</option>
+					<option>9</option>
+					<option>10</option>
+				</select>
+				<br />
+				<br />
+				<label class="btn btn-default">
+					<input type = "radio" name = "method" id = "methodGauss" value = "Gauss" checked>
+					Gauss
+				</label>
+				<label class="btn btn-default">
+					<input type = "radio" name = "method" id = "methodLaplace" value = "Laplace">
+					Laplace
+				</label>
+				<input type = "button" name = "button" value = "Submit" class="btn btn-primary" onClick= "GetMatrixSize(this.form)">
+			</fieldset>
 		</form>
 	</div>
 	<div id="myDiv">
 	</div>
 	<script src="https://code.jquery.com/jquery-2.2.2.min.js"></script>
-	<script src="https://github.com/randomFZFguy/matrix_stuff_for_fzf/blob/master/Determinants.js"></script>
+	<script src="Determinants.js"></script>
 
 </body>
 </html>
