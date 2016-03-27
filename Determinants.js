@@ -24,13 +24,13 @@
 		
 		//====== HandleInputSize ======================
 		function HandleInputSize(size) {
-			if (size > 0 && size < 16) {
+			if (size > 0 && size < 11) {
 				Explain("Matrix size: " + size);
 				Explain("Fill in the matrix. You can leave 0 cells empty.")
 				m.reset();
 				AddInputTableAndHandleInputData(size);
 			} else {
-				Explain("You entered an invalid matrix size. We'll use the example matrix.")
+				Explain("We'll use the example matrix.", "h4")
 				m.reset();
 				SetMatrix();
 			}
@@ -116,9 +116,9 @@
 		
 		//====== ChooseAMethod ========================
 		function ChooseAMethod() {
-			if (document.getElementById('methodGauss').checked) {
+			if ($('#methodGauss')[0].checked) {
 				GaussMethod();
-			} else if (document.getElementById('methodLaplace').checked) {
+			} else if ($('#methodLaplace')[0].checked) {
 				LaplaceMethod();
 			}
 		}
@@ -128,6 +128,7 @@
 			var table = document.createElement("table");
 			table.className += " table table-bordered";
 			var tableBody = document.createElement("tbody");
+			
 			table.appendChild(tableBody);
 			
 			// columns
@@ -171,7 +172,7 @@
 
 		//====== GaussMethod ==========================
 		function GaussMethod() {
-			Explain("Gauss Elimination Method:");
+			Explain("Gauss Elimination Method:", "h4");
 			for (var col = 0; col < m.size ; col ++) {
 				m.col ++;
 				m.row = m.col;
@@ -272,7 +273,7 @@
 		
 		//====== LaplaceNethod ========================
 		function LaplaceMethod() {
-			Explain("Laplace Method:");
+			Explain("Laplace Method:", "h4");
 			Explain("The determinant is " + FindDeterminant());
 		}
 		
@@ -398,8 +399,12 @@
 		
 		
 		//====== Explain ==============================
-		function Explain(explanation) {
-			var para = document.createElement("p");
+		function Explain(explanation, type) {
+			if (!type) {
+				var para = document.createElement("p");
+			} else if (type == "h4") {
+				var para = document.createElement("h4");
+			}
 			myDiv.appendChild(para);
 			var text = document.createTextNode(explanation);
 			para.appendChild(text);
