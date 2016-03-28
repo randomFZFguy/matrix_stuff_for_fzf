@@ -12,6 +12,8 @@
 		var mat = [];
 		mat[0] = Object.create(m);
 		
+		var inputCell = [];
+		
 		//====== GetMatrixSize ========================
 		function GetMatrixSize(form) {
 			ClearBox("myDiv");
@@ -25,7 +27,8 @@
 				Explain("Matrix size: " + size);
 				Explain("Fill in the matrix. You can leave 0 cells empty.")
 				mat[0].reset();
-				AddInputTableAndHandleInputData(size);
+				mat[0].size = size;
+				AddInputTableAndHandleInputData();
 			} else {
 				Explain("We'll use the example matrix.", "h4")
 				mat[0].reset();
@@ -34,7 +37,7 @@
 		}
 		
 		//====== AddInputTableAndHandleInputData ======
-		function AddInputTableAndHandleInputData(size) {
+		function AddInputTableAndHandleInputData() {
 			var inputTable = document.createElement("table");
 			inputTable.className += " table table-bordered";
 			var tableBody = document.createElement("tbody");
@@ -43,18 +46,17 @@
 			// columns
 			var tr = document.createElement("tr");
 			tableBody.appendChild(tr);
-			for (var col = 0; col < size; col ++) {
+			for (var col = 0; col < mat[0].size; col ++) {
 				var th = document.createElement("th");
 				th.appendChild(document.createTextNode(col));
 				tr.appendChild(th);
 			}
 			
 			// rows
-			var inputCell = [];
-			for (var row = 0; row < size; row ++) {
+			for (var row = 0; row < mat[0].size; row ++) {
 				var tr = document.createElement("tr");
 				inputCell[row] = [];
-				for (var col = 0; col < size; col ++) {
+				for (var col = 0; col < mat[0].size; col ++) {
 					inputCell[row][col] = document.createElement("input");
 					inputCell[row][col].type = "text";
 					inputCell[row][col].className = "matrixInput";
@@ -72,29 +74,31 @@
 			var buttonText = document.createTextNode("Submit");
 			submitButton.appendChild(buttonText);
 			myDiv.appendChild(submitButton);
-			submitButton.addEventListener("click", PopulateMatrix);
-			
-			function PopulateMatrix() {
-				for (var row = 0; row < size; row ++) {
-					mat[0].elems[row] = [];
-					for (var col = 0; col < size; col ++) {
-						if (inputCell[row][col].value != "") {
-							mat[0].elems[row][col] = inputCell[row][col].value;
-						} else {
-							mat[0].elems[row][col] = 0;
-						}
-					}
-				}
-				Explain("This is the matrix you entered:");
-				SetMatrix(size);
-			}
+			submitButton.addEventListener("click", function () {
+				PopulateMatrix();
+			});
 		}
 
+		//====== PopulateMatrix =======================
+		function PopulateMatrix() {
+			for (var row = 0; row < mat[0].size; row ++) {
+				mat[0].elems[row] = [];
+				for (var col = 0; col < mat[0].size; col ++) {
+					if (inputCell[row][col].value != "") {
+						mat[0].elems[row][col] = inputCell[row][col].value;
+					} else {
+						mat[0].elems[row][col] = 0;
+					}
+				}
+			}
+			Explain("This is the matrix you entered:");
+			SetMatrix();
+		}
+		
 		//====== SetMatrix ============================
-		function SetMatrix(size) {
-			if (size) {
-				mat[0].usefulRows = size;
-				mat[0].size = size;
+		function SetMatrix() {
+			if (mat[0].size !== 0) {
+				mat[0].usefulRows = mat[0].size;
 				AddTable();
 				ChooseAMethod();
 			} else {
@@ -274,7 +278,7 @@
 		//====== LaplaceMethod ========================
 		function LaplaceMethod() {
 			Explain("Laplace Method:", "h4");
-			Explain("The determinant is " + FindDeterminant(mat[0].size), "h4");
+			Explain("The determinant is " + FindDeterminant(mat[0].size) + ".", "h4");
 		}
 		
 		//====== FindDeterminant ======================
