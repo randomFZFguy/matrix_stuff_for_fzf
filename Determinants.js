@@ -277,13 +277,14 @@
 		//====== FindDeterminant ======================
 		function FindDeterminant(size) {
 			var determinant = 0;
-			var fuck = mat[0].size - size;
+			var lvl = mat[0].size - size;
+			// lvl is the level of recurusion. It increases as "size" decreases.
 			
 			if (size > 3) {
 				for (var i = 0; i < size; i ++) {
 					// Math.pow(-1, i) == Math.pow(-1, (0 + 1) + (i + 1))
 					GetMinor(size, 0, i);
-					determinant += mat[fuck].elems[0][i] * Math.pow(-1, i) * FindDeterminant(size - 1);
+					determinant += mat[lvl].elems[0][i] * Math.pow(-1, i) * FindDeterminant(size - 1);
 				}
 			} else if (size == 3) {
 				determinant += Find3x3Determinant();
@@ -301,63 +302,63 @@
 		
 		//====== GetMinor =============================
 		function GetMinor(size, i, j) {
-			var fuck = mat[0].size - size + 1;
-			mat[fuck] = Object.create(m);
-			mat[fuck].reset();
-			mat[fuck].size = size - 1;
+			var lvl = mat[0].size - size + 1;
+			mat[lvl] = Object.create(m);
+			mat[lvl].reset();
+			mat[lvl].size = size - 1;
 			
-			for (var row = 0; row < mat[fuck].size; row ++) {
-				mat[fuck].elems[row] = [];
-				for (var col = 0; col < mat[fuck].size; col ++) {
+			for (var row = 0; row < mat[lvl].size; row ++) {
+				mat[lvl].elems[row] = [];
+				for (var col = 0; col < mat[lvl].size; col ++) {
 					if (col >= j) {
 						if (row >= i) {
-							mat[fuck].elems[row][col] = mat[fuck - 1].elems[row + 1][col + 1];
+							mat[lvl].elems[row][col] = mat[lvl - 1].elems[row + 1][col + 1];
 						} else {
-							mat[fuck].elems[row][col] = mat[fuck - 1].elems[row + 1][col + 1];
+							mat[lvl].elems[row][col] = mat[lvl - 1].elems[row + 1][col + 1];
 						}
 					} else {
 						if (row >= i) {
-							mat[fuck].elems[row][col] = mat[fuck - 1].elems[row + 1][col];
+							mat[lvl].elems[row][col] = mat[lvl - 1].elems[row + 1][col];
 						} else {
-							mat[fuck].elems[row][col] = mat[fuck - 1].elems[row][col];
+							mat[lvl].elems[row][col] = mat[lvl - 1].elems[row][col];
 						}
 					}
 				}
 			}
 			Explain("The minor with row " + i + " and column " + j + " removed:");
-			AddTableLaplace(mat[fuck].size);
+			AddTableLaplace(mat[lvl].size);
 		}
 		
 		//====== Find3x3Determinant ===================
 		function Find3x3Determinant() {
-			var fuck = mat[0].size - 3;
-			var determinant = mat[fuck].elems[0][0] * mat[fuck].elems[1][1] * mat[fuck].elems[2][2] +
-												mat[fuck].elems[0][1] * mat[fuck].elems[1][2] * mat[fuck].elems[2][0] +
-												mat[fuck].elems[0][2] * mat[fuck].elems[1][0] * mat[fuck].elems[2][1] -
-												mat[fuck].elems[0][0] * mat[fuck].elems[1][2] * mat[fuck].elems[2][1] -
-												mat[fuck].elems[0][1] * mat[fuck].elems[1][0] * mat[fuck].elems[2][2] -
-												mat[fuck].elems[0][2] * mat[fuck].elems[1][1] * mat[fuck].elems[2][0];
+			var lvl = mat[0].size - 3;
+			var determinant = mat[lvl].elems[0][0] * mat[lvl].elems[1][1] * mat[lvl].elems[2][2] +
+												mat[lvl].elems[0][1] * mat[lvl].elems[1][2] * mat[lvl].elems[2][0] +
+												mat[lvl].elems[0][2] * mat[lvl].elems[1][0] * mat[lvl].elems[2][1] -
+												mat[lvl].elems[0][0] * mat[lvl].elems[1][2] * mat[lvl].elems[2][1] -
+												mat[lvl].elems[0][1] * mat[lvl].elems[1][0] * mat[lvl].elems[2][2] -
+												mat[lvl].elems[0][2] * mat[lvl].elems[1][1] * mat[lvl].elems[2][0];
 			return determinant;
 		}
 		
 		//====== Find2x2Determinant ===================
 		function Find2x2Determinant() {
-			var fuck = mat[0].size - 2;
-			var determinant = mat[fuck].elems[0][0] * mat[fuck].elems[1][1] -
-												mat[fuck].elems[0][1] * mat[fuck].elems[1][0];
+			var lvl = mat[0].size - 2;
+			var determinant = mat[lvl].elems[0][0] * mat[lvl].elems[1][1] -
+												mat[lvl].elems[0][1] * mat[lvl].elems[1][0];
 			return determinant;
 		}
 		
 		//====== Find1x1Determinant ===================
 		function Find1x1Determinant() {
-			var fuck = mat[0].size - 1;
-			var determinant = mat[fuck].elems[0][0] * 1; // to make it a number
+			var lvl = mat[0].size - 1;
+			var determinant = mat[lvl].elems[0][0] * 1; // to make it a number
 			return determinant;
 		}
 		
 		//====== AddTableLaplace ======================
 		function AddTableLaplace(size) {
-			var fuck = mat[0].size - size;
+			var lvl = mat[0].size - size;
 			
 			var table = document.createElement("table");
 			table.className += "table table-bordered";
@@ -381,7 +382,7 @@
 					if (col == row) {
 						td.style.background = "#E1E1E1";
 					}
-					td.appendChild(document.createTextNode(mat[fuck].elems[row][col]));
+					td.appendChild(document.createTextNode(mat[lvl].elems[row][col]));
 					tr.appendChild(td)
 				}
 				
