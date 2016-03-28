@@ -167,6 +167,8 @@
 			myDiv.appendChild(table);
 		}
 
+		
+		//====== Gauss method =========================
 		//====== GaussMethod ==========================
 		function GaussMethod() {
 			Explain("Gauss Elimination Method:", "h4");
@@ -268,7 +270,8 @@
 		}
 		
 		
-		//====== LaplaceNethod ========================
+		//====== Laplace method =======================
+		//====== LaplaceMethod ========================
 		function LaplaceMethod() {
 			Explain("Laplace Method:", "h4");
 			Explain("The determinant is " + FindDeterminant(mat[0].size), "h4");
@@ -278,7 +281,7 @@
 		function FindDeterminant(size) {
 			var determinant = 0;
 			var lvl = mat[0].size - size;
-			// lvl is the level of recurusion. It increases as "size" decreases.
+			// lvl is the level of recursion. It increases as "size" decreases.
 			
 			if (size > 3) {
 				for (var i = 0; i < size; i ++) {
@@ -393,6 +396,7 @@
 		}
 		
 		
+		//====== Helper functions =====================
 		//====== Explain ==============================
 		function Explain(explanation, type) {
 			if (!type) {
