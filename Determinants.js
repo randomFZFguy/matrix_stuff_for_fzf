@@ -57,11 +57,17 @@
 				var tr = document.createElement("tr");
 				inputCell[row] = [];
 				for (var col = 0; col < mat[0].size; col ++) {
+					
 					inputCell[row][col] = document.createElement("input");
 					inputCell[row][col].type = "text";
 					inputCell[row][col].className = "matrixInput";
 					var td = document.createElement("td");
+					
+					if (col == row) {
+						td.style.background = "#E1E1E1";
+					}
 					td.appendChild(inputCell[row][col]);
+					
 					tr.appendChild(td);
 				}
 				tableBody.appendChild(tr);
@@ -229,6 +235,7 @@
 			return rowIsZero;
 		}
 		
+		/* Normalize
 		//====== Normalize ============================
 		function Normalize() {
 			var multiplier = mat[0].elems[mat[0].col][mat[0].col];
@@ -241,6 +248,7 @@
 				AddTable(mat[0].size, mat[0].col);
 			}
 		}
+		*/
 		
 		//====== AddRows ==============================
 		function AddRows(addend, target, multiplier) {
@@ -294,15 +302,9 @@
 					GetMinor(size - 1, 0, i);
 					determinant += mat[lvl].elems[0][i] * Math.pow(-1, i) * FindDeterminant(size - 1);
 				}
-			} else if (size == 3) {
-				determinant += Find3x3Determinant();
-				Explain("The determinant of this 3x3 matrix is " + determinant + ".");
-			} else if (size == 2) {
-				determinant += Find2x2Determinant();
-				Explain("The determinant of this 2x2 matrix is " + determinant + ".");
-			} else if (size == 1) {
-				determinant += Find1x1Determinant();
-				Explain("The determinant of this 1x1 matrix is " + determinant + ".");
+			} else {
+				determinant += FindSmallDeterminant(size);
+ 				Explain("The determinant of this matrix is " + determinant + ".");
 			}
 			
 			return determinant;
@@ -322,7 +324,7 @@
 						if (row >= i) {
 							mat[lvl].elems[row][col] = mat[lvl - 1].elems[row + 1][col + 1];
 						} else {
-							mat[lvl].elems[row][col] = mat[lvl - 1].elems[row + 1][col + 1];
+							mat[lvl].elems[row][col] = mat[lvl - 1].elems[row][col + 1];
 						}
 					} else {
 						if (row >= i) {
@@ -337,30 +339,22 @@
 			AddTable(mat[lvl].size);
 		}
 		
-		//====== Find3x3Determinant ===================
-		function Find3x3Determinant() {
-			var lvl = mat[0].size - 3;
-			var determinant = mat[lvl].elems[0][0] * mat[lvl].elems[1][1] * mat[lvl].elems[2][2] +
-												mat[lvl].elems[0][1] * mat[lvl].elems[1][2] * mat[lvl].elems[2][0] +
-												mat[lvl].elems[0][2] * mat[lvl].elems[1][0] * mat[lvl].elems[2][1] -
-												mat[lvl].elems[0][0] * mat[lvl].elems[1][2] * mat[lvl].elems[2][1] -
-												mat[lvl].elems[0][1] * mat[lvl].elems[1][0] * mat[lvl].elems[2][2] -
-												mat[lvl].elems[0][2] * mat[lvl].elems[1][1] * mat[lvl].elems[2][0];
-			return determinant;
-		}
-		
-		//====== Find2x2Determinant ===================
-		function Find2x2Determinant() {
-			var lvl = mat[0].size - 2;
-			var determinant = mat[lvl].elems[0][0] * mat[lvl].elems[1][1] -
+		//====== FindSmallDeterminant =================
+		function FindSmallDeterminant(size) {
+			var lvl = mat[0].size - size;
+			if (size == 3) {
+					var determinant = mat[lvl].elems[0][0] * mat[lvl].elems[1][1] * mat[lvl].elems[2][2] +
+														mat[lvl].elems[0][1] * mat[lvl].elems[1][2] * mat[lvl].elems[2][0] +
+														mat[lvl].elems[0][2] * mat[lvl].elems[1][0] * mat[lvl].elems[2][1] -
+														mat[lvl].elems[0][0] * mat[lvl].elems[1][2] * mat[lvl].elems[2][1] -
+														mat[lvl].elems[0][1] * mat[lvl].elems[1][0] * mat[lvl].elems[2][2] -
+														mat[lvl].elems[0][2] * mat[lvl].elems[1][1] * mat[lvl].elems[2][0];
+			} else if (size == 2) {
+				var determinant = mat[lvl].elems[0][0] * mat[lvl].elems[1][1] -
 												mat[lvl].elems[0][1] * mat[lvl].elems[1][0];
-			return determinant;
-		}
-		
-		//====== Find1x1Determinant ===================
-		function Find1x1Determinant() {
-			var lvl = mat[0].size - 1;
-			var determinant = mat[lvl].elems[0][0] * 1; // to make it a number
+			} else if (size == 1) {
+				var determinant = mat[lvl].elems[0][0] * 1; // to make it a number
+			}
 			return determinant;
 		}
 		
