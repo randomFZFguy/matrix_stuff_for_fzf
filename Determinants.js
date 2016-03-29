@@ -99,7 +99,7 @@
 		function SetMatrix() {
 			if (mat[0].size !== 0) {
 				mat[0].usefulRows = mat[0].size;
-				AddTable();
+				AddTable(mat[0].size);
 				ChooseAMethod();
 			} else {
 				mat[0].elems = [[2,4,-4,0,2,1],
@@ -110,7 +110,7 @@
 									[1,0,2,0,-2,-2]];
 				mat[0].size = mat[0].elems.length;
 				mat[0].usefulRows = mat[0].elems.length;
-				AddTable();
+				AddTable(mat[0].size);
 				ChooseAMethod();
 			}
 		}
@@ -125,17 +125,18 @@
 		}
 		
 		//====== AddTable =============================
-		function AddTable(currentRow1, currentRow2) {
+		function AddTable(size, currentRow1, currentRow2) {
+			var lvl = mat[0].size - size; // used in Laplace, 0 in Gauss
+			
 			var table = document.createElement("table");
 			table.className += " table table-bordered";
 			var tableBody = document.createElement("tbody");
-			
 			table.appendChild(tableBody);
 			
 			// columns
 			var tr = document.createElement("tr");
 			tableBody.appendChild(tr);
-			for (var col = 0; col < mat[0].size; col ++) {
+			for (var col = 0; col < mat[lvl].size; col ++) {
 				var th = document.createElement("th");
 				th.appendChild(document.createTextNode(col));
 				if (col == mat[0].col) {
@@ -145,17 +146,17 @@
 			}
 			
 			// rows
-			for (var row = 0; row < mat[0].size; row ++) {
+			for (var row = 0; row < mat[lvl].size; row ++) {
 				var tr = document.createElement("tr");
-				for (var col = 0; col < mat[0].size; col ++) {
+				for (var col = 0; col < mat[lvl].size; col ++) {
 					var td = document.createElement("td");
 					if (col == row) {
 						td.style.background = "#E1E1E1";
 					}
-					td.appendChild(document.createTextNode(mat[0].elems[row][col]));
+					td.appendChild(document.createTextNode(mat[lvl].elems[row][col]));
 					tr.appendChild(td)
 					
-					if (mat[0].col == col && (currentRow1 == row || currentRow2 == row)) {
+					if (mat[lvl].col == col && (currentRow1 == row || currentRow2 == row)) {
 						td.style.color = "FF0000";
 						td.style.fontWeight = "bold";
 					}
@@ -170,7 +171,7 @@
 			
 			myDiv.appendChild(table);
 		}
-
+		
 		
 		//====== Gauss method =========================
 		//====== GaussMethod ==========================
@@ -237,7 +238,7 @@
 				}
 				
 				Explain("Normalizing row " + mat[0].col + ":");
-				AddTable(mat[0].col);
+				AddTable(mat[0].size, mat[0].col);
 			}
 		}
 		
@@ -248,7 +249,7 @@
 			}
 			
 			Explain("(row " + target + ") += (row " + addend + ") * (" + -multiplier + "):");
-			AddTable(addend, target);
+			AddTable(mat[0].size, addend, target);
 		}
 		
 		//====== SwitchRows ===========================
@@ -261,7 +262,7 @@
 			}
 			
 			Explain("Switching row " + row1 + " with row " + row2 + ":");
-			AddTable(row1, row2);
+			AddTable(mat[0].size, row1, row2);
 		}
 		
 		//====== MultiplyDiagonal =====================
@@ -290,7 +291,7 @@
 			if (size > 3) {
 				for (var i = 0; i < size; i ++) {
 					// Math.pow(-1, i) == Math.pow(-1, (0 + 1) + (i + 1))
-					GetMinor(size, 0, i);
+					GetMinor(size - 1, 0, i);
 					determinant += mat[lvl].elems[0][i] * Math.pow(-1, i) * FindDeterminant(size - 1);
 				}
 			} else if (size == 3) {
@@ -309,10 +310,10 @@
 		
 		//====== GetMinor =============================
 		function GetMinor(size, i, j) {
-			var lvl = mat[0].size - size + 1;
+			var lvl = mat[0].size - size;
 			mat[lvl] = Object.create(m);
 			mat[lvl].reset();
-			mat[lvl].size = size - 1;
+			mat[lvl].size = size;
 			
 			for (var row = 0; row < mat[lvl].size; row ++) {
 				mat[lvl].elems[row] = [];
@@ -333,7 +334,7 @@
 				}
 			}
 			Explain("The minor with row " + i + " and column " + j + " removed:");
-			AddTableLaplace(mat[lvl].size);
+			AddTable(mat[lvl].size);
 		}
 		
 		//====== Find3x3Determinant ===================
@@ -361,42 +362,6 @@
 			var lvl = mat[0].size - 1;
 			var determinant = mat[lvl].elems[0][0] * 1; // to make it a number
 			return determinant;
-		}
-		
-		//====== AddTableLaplace ======================
-		function AddTableLaplace(size) {
-			var lvl = mat[0].size - size;
-			
-			var table = document.createElement("table");
-			table.className += "table table-bordered";
-			var tableBody = document.createElement("tbody");
-			table.appendChild(tableBody);
-			
-			// columns
-			var tr = document.createElement("tr");
-			tableBody.appendChild(tr);
-			for (var col = 0; col < size; col ++) {
-				var th = document.createElement("th");
-				th.appendChild(document.createTextNode(col));
-				tr.appendChild(th);
-			}
-			
-			// rows
-			for (var row = 0; row < size; row ++) {
-				var tr = document.createElement("tr");
-				for (var col = 0; col < size; col ++) {
-					var td = document.createElement("td");
-					if (col == row) {
-						td.style.background = "#E1E1E1";
-					}
-					td.appendChild(document.createTextNode(mat[lvl].elems[row][col]));
-					tr.appendChild(td)
-				}
-				
-				tableBody.appendChild(tr);
-			}
-			
-			myDiv.appendChild(table);
 		}
 		
 		
